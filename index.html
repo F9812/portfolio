@@ -1,0 +1,27 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кейсы</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Добро пожаловать, игрок!</h1>
+        <p>Твой баланс: <span id="balance">{{ user_data['balance'] }}</span> ⭐</p>
+
+        <div>
+            <button class="open-case-btn" data-price="1">Открыть Базовый кейс (1 ⭐)</button>
+            <button class="open-case-btn" data-price="15">Открыть Стандартный кейс (15 ⭐)</button>
+            <button class="open-case-btn" data-price="25">Открыть Премиум кейс (25 ⭐)</button>
+        </div>
+
+        <div id="prize-result"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
