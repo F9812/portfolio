@@ -14,20 +14,20 @@
     
     <!-- Основной контейнер -->
     <div class="container">
-        <!-- Шапка с основной инфой -->
+        <!-- Шапка -->
         <header class="header">
             <div class="game-title">
                 <i class="fas fa-infinity"></i>
                 <h1>Космический Инкрементор</h1>
             </div>
             <div class="player-info">
-                <div class="player-name">
+                <div class="player-name" id="player-name-display">
                     <i class="fas fa-user-astronaut"></i>
-                    <span id="username">Космонавт</span>
+                    <span>Космонавт</span>
                 </div>
                 <div class="save-status">
                     <i class="fas fa-save" id="save-icon"></i>
-                    <span>Сохранено</span>
+                    <span id="save-status-text">Сохранено</span>
                 </div>
             </div>
         </header>
@@ -63,52 +63,108 @@
                 <div class="stat-content">
                     <div class="stat-label">ПРЕСТИЖ</div>
                     <div class="stat-value" id="prestige">0</div>
-                    <div class="stat-sub">До след.: <span id="prestige-timer">04:00:00</span></div>
+                    <div class="stat-sub">Очков: <span id="prestige-points">0</span></div>
                 </div>
             </div>
         </section>
 
-        <!-- Основное ядро для кликов -->
-        <section class="clicker">
-            <div class="clicker-header">
-                <h2><i class="fas fa-atom"></i> Квантовое ядро</h2>
-                <p>Кликай для генерации энергии</p>
-            </div>
-            
-            <div class="clicker-core">
-                <div class="particles" id="particles"></div>
-                <button class="core" id="core">
-                    <div class="core-glow"></div>
-                    <i class="fas fa-bolt"></i>
-                </button>
+        <!-- Блок с кликером и престижем -->
+        <div class="core-section">
+            <!-- Кликер -->
+            <section class="clicker">
+                <div class="clicker-header">
+                    <h2><i class="fas fa-atom"></i> Квантовое ядро</h2>
+                    <p>Кликай для генерации энергии</p>
+                </div>
                 
-                <div class="clicker-info">
-                    <div class="click-power">
-                        <i class="fas fa-mouse-pointer"></i>
-                        <span>+<span id="click-power-value">1</span> за клик</span>
-                    </div>
-                    <div class="auto-power">
-                        <i class="fas fa-robot"></i>
-                        <span>+<span id="auto-power-value">0</span>/сек</span>
+                <div class="clicker-core">
+                    <div class="particles" id="particles"></div>
+                    <button class="core" id="core">
+                        <div class="core-glow"></div>
+                        <i class="fas fa-bolt"></i>
+                    </button>
+                    
+                    <div class="clicker-info">
+                        <div class="click-power">
+                            <i class="fas fa-mouse-pointer"></i>
+                            <span>+<span id="click-power-value">1</span> за клик</span>
+                        </div>
+                        <div class="auto-power">
+                            <i class="fas fa-robot"></i>
+                            <span>+<span id="auto-power-value">0</span>/сек</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Быстрые улучшения -->
-            <div class="quick-upgrades">
-                <button class="quick-upgrade" id="boost-2x">
-                    <i class="fas fa-expand-alt"></i>
-                    <span>x2 Клик</span>
-                    <small>100 энергии</small>
-                </button>
                 
-                <button class="quick-upgrade" id="boost-5x">
-                    <i class="fas fa-rocket"></i>
-                    <span>x5 Авто</span>
-                    <small>500 энергии</small>
-                </button>
-            </div>
-        </section>
+                <!-- Быстрые улучшения -->
+                <div class="quick-upgrades">
+                    <button class="quick-upgrade" id="boost-2x" onclick="game.buyBoost('click2x', 100)">
+                        <i class="fas fa-expand-alt"></i>
+                        <span>x2 Клик</span>
+                        <small id="boost-2x-cost">100 энергии</small>
+                    </button>
+                    
+                    <button class="quick-upgrade" id="boost-5x" onclick="game.buyBoost('auto5x', 500)">
+                        <i class="fas fa-rocket"></i>
+                        <span>x5 Авто</span>
+                        <small id="boost-5x-cost">500 энергии</small>
+                    </button>
+                </div>
+            </section>
+            
+            <!-- Престиж -->
+            <section class="prestige-section">
+                <div class="prestige-card">
+                    <div class="prestige-header">
+                        <i class="fas fa-sync-alt"></i>
+                        <h3>Перерождение</h3>
+                    </div>
+                    
+                    <div class="prestige-info">
+                        <div class="prestige-requirement">
+                            <div class="requirement-label">Требуется энергии:</div>
+                            <div class="requirement-value" id="prestige-required">1,000,000</div>
+                        </div>
+                        
+                        <div class="prestige-progress">
+                            <div class="progress-label">Прогресс:</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="prestige-progress-bar"></div>
+                            </div>
+                            <div class="progress-text" id="prestige-progress-text">0%</div>
+                        </div>
+                        
+                        <div class="prestige-time">
+                            <i class="fas fa-clock"></i>
+                            <span>Доступно через: <strong id="prestige-time-left">04:00:00</strong></span>
+                        </div>
+                        
+                        <div class="prestige-reward">
+                            <div class="reward-label">Награда:</div>
+                            <div class="reward-content">
+                                <div class="reward-item">
+                                    <i class="fas fa-star"></i>
+                                    <span>+50% бонус ко всему</span>
+                                </div>
+                                <div class="reward-item">
+                                    <i class="fas fa-coins"></i>
+                                    <span>+<span id="prestige-reward-points">1</span> очков престижа</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="prestige-btn" id="prestige-btn" onclick="game.prestige()">
+                            <i class="fas fa-sync-alt"></i>
+                            Переродиться
+                        </button>
+                        
+                        <div class="prestige-tips">
+                            <p><i class="fas fa-info-circle"></i> Каждое перерождение требует больше энергии</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
 
         <!-- Улучшения -->
         <section class="upgrades">
@@ -132,81 +188,82 @@
             
             <!-- Массовые покупки -->
             <div class="mass-buy">
-                <button class="mass-btn" id="buy-10">
+                <button class="mass-btn" id="buy-10" onclick="game.buyMultiple(10)">
                     <i class="fas fa-forward"></i>
                     <span>Купить 10</span>
                 </button>
-                <button class="mass-btn" id="buy-100">
+                <button class="mass-btn" id="buy-100" onclick="game.buyMultiple(100)">
                     <i class="fas fa-fast-forward"></i>
                     <span>Купить 100</span>
                 </button>
-                <button class="mass-btn" id="buy-max">
+                <button class="mass-btn" id="buy-max" onclick="game.buyMax()">
                     <i class="fas fa-infinity"></i>
                     <span>Купить максимум</span>
                 </button>
             </div>
         </section>
 
-        <!-- Престиж -->
-        <section class="prestige-section">
-            <div class="prestige-card">
-                <div class="prestige-header">
-                    <i class="fas fa-sync-alt"></i>
-                    <h3>Перерождение</h3>
+        <!-- Ивенты и таблица лидеров -->
+        <div class="bottom-section">
+            <!-- Ивенты -->
+            <section class="events">
+                <div class="events-header">
+                    <i class="fas fa-calendar-star"></i>
+                    <h3>Активный ивент</h3>
                 </div>
                 
-                <div class="prestige-info">
-                    <div class="prestige-requirement">
-                        <div class="requirement-label">Требуется:</div>
-                        <div class="requirement-value" id="prestige-required">1,000,000 энергии</div>
+                <div class="event-card" id="event-card">
+                    <div class="event-icon">
+                        <i class="fas fa-gift"></i>
                     </div>
-                    
-                    <div class="prestige-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="prestige-progress"></div>
-                        </div>
-                        <div class="progress-text">
-                            <span id="prestige-progress-text">0%</span>
-                            <span id="prestige-time">04:00:00</span>
-                        </div>
+                    <div class="event-info">
+                        <h4>Нет активных ивентов</h4>
+                        <p>Следующий ивент через: <span id="next-event">60:00</span></p>
                     </div>
-                    
-                    <div class="prestige-reward">
-                        <div class="reward-item">
-                            <i class="fas fa-star"></i>
-                            <span>+50% бонус</span>
-                        </div>
-                        <div class="reward-item">
-                            <i class="fas fa-coins"></i>
-                            <span>+1 очко престижа</span>
-                        </div>
-                    </div>
-                    
-                    <button class="prestige-btn" id="prestige-btn" disabled>
-                        <i class="fas fa-sync-alt"></i>
-                        Переродиться
-                    </button>
                 </div>
-            </div>
-        </section>
-
-        <!-- Ивенты -->
-        <section class="events">
-            <div class="events-header">
-                <i class="fas fa-calendar-star"></i>
-                <h3>Активный ивент</h3>
-            </div>
+            </section>
             
-            <div class="event-card" id="event-card">
-                <div class="event-icon">
-                    <i class="fas fa-gift"></i>
+            <!-- Таблица лидеров -->
+            <section class="leaderboard">
+                <div class="leaderboard-header">
+                    <i class="fas fa-trophy"></i>
+                    <h3>Таблица лидеров</h3>
                 </div>
-                <div class="event-info">
-                    <h4>Нет активных ивентов</h4>
-                    <p>Следующий ивент через: <span id="next-event">60:00</span></p>
+                
+                <div class="leaderboard-tabs">
+                    <button class="leaderboard-tab active" data-board="balance">По балансу</button>
+                    <button class="leaderboard-tab" data-board="prestige">По престижу</button>
+                    <button class="leaderboard-tab" data-board="total">Общий рейтинг</button>
                 </div>
-            </div>
-        </section>
+                
+                <div class="leaderboard-content">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th width="50">#</th>
+                                <th>Игрок</th>
+                                <th width="120">Баланс</th>
+                                <th width="80">Престиж</th>
+                                <th width="100">Время</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body">
+                            <!-- Заполняется через JS -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="player-rank">
+                    <div class="rank-info">
+                        <i class="fas fa-user"></i>
+                        <div class="rank-text">
+                            <span>Ваше место: <strong id="player-rank">-</strong></span>
+                            <span class="rank-sub">Баланс: <span id="player-balance">0</span></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
 
         <!-- Футер -->
         <footer class="footer">
@@ -217,14 +274,13 @@
                 </div>
                 
                 <div class="controls">
-                    <button class="control-btn" id="settings-btn">
+                    <button class="control-btn" id="settings-btn" onclick="game.showSettings()">
                         <i class="fas fa-cog"></i>
+                        Настройки
                     </button>
-                    <button class="control-btn" id="save-btn">
+                    <button class="control-btn" id="save-btn" onclick="game.save()">
                         <i class="fas fa-save"></i>
-                    </button>
-                    <button class="control-btn" id="reset-btn">
-                        <i class="fas fa-redo"></i>
+                        Сохранить
                     </button>
                 </div>
             </div>
@@ -235,22 +291,22 @@
     <div class="modal" id="settings-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-cog"></i> Настройки</h3>
-                <button class="close-modal">&times;</button>
+                <h3><i class="fas fa-cog"></i> Настройки игры</h3>
+                <button class="close-modal" onclick="game.hideSettings()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="setting">
-                    <label>Имя игрока:</label>
+                    <label for="username-input">Имя игрока:</label>
                     <div class="name-input">
-                        <input type="text" id="username-input" maxlength="20">
-                        <button id="save-name">Сохранить</button>
+                        <input type="text" id="username-input" maxlength="20" placeholder="Введите имя">
+                        <button onclick="game.changeUsername()">Сохранить</button>
                     </div>
                 </div>
                 
                 <div class="setting">
                     <label>
                         <input type="checkbox" id="auto-save" checked>
-                        <span>Автосохранение</span>
+                        <span>Автосохранение (30 сек)</span>
                     </label>
                 </div>
                 
@@ -262,11 +318,33 @@
                 </div>
                 
                 <div class="setting">
+                    <label>
+                        <input type="checkbox" id="notifications" checked>
+                        <span>Уведомления</span>
+                    </label>
+                </div>
+                
+                <div class="setting">
                     <label>Формат чисел:</label>
                     <select id="number-format">
                         <option value="short">Короткий (1.2K)</option>
                         <option value="full">Полный (1200)</option>
                     </select>
+                </div>
+                
+                <div class="setting">
+                    <label>Импорт/экспорт:</label>
+                    <div class="import-export">
+                        <button onclick="game.exportSave()">Экспорт сохранения</button>
+                        <button onclick="game.importSave()">Импорт сохранения</button>
+                    </div>
+                </div>
+                
+                <div class="setting">
+                    <button class="reset-btn" onclick="game.resetGame()">
+                        <i class="fas fa-redo"></i>
+                        Сбросить игру
+                    </button>
                 </div>
             </div>
         </div>
