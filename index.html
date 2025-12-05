@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Энергосфера - Energosphere</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Верхняя панель -->
+        <header class="game-header">
+            <div class="player-info">
+                <div class="avatar" id="player-avatar">
+                    <i class="fas fa-user-astronaut"></i>
+                </div>
+                <div class="player-stats">
+                    <div class="stat">
+                        <span class="stat-label">Энергия:</span>
+                        <span class="stat-value" id="energy-counter">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Квантовые очки:</span>
+                        <span class="stat-value" id="quantum-counter">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Сессия:</span>
+                        <span class="stat-value" id="session-timer">00:00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-controls">
+                <button class="btn btn-icon" id="settings-btn">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="btn btn-icon" id="social-btn">
+                    <i class="fas fa-users"></i>
+                </button>
+                <button class="btn btn-icon" id="market-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Основная игровая область -->
+        <main class="game-main">
+            <!-- Центральный кристалл -->
+            <div class="crystal-container">
+                <div class="crystal" id="main-crystal">
+                    <div class="crystal-core"></div>
+                    <div class="crystal-facets">
+                        <div class="facet"></div>
+                        <div class="facet"></div>
+                        <div class="facet"></div>
+                        <div class="facet"></div>
+                    </div>
+                    <div class="crystal-glow"></div>
+                </div>
+                <div class="crystal-info">
+                    <div class="click-energy">+<span id="click-value">1</span> энергии за клик</div>
+                    <div class="total-clicks">Кликов: <span id="total-clicks">0</span></div>
+                </div>
+            </div>
+
+            <!-- Боковая панель генераторов -->
+            <aside class="generators-panel">
+                <h3 class="panel-title">
+                    <i class="fas fa-industry"></i> Генераторы
+                </h3>
+                <div class="generators-list" id="generators-list">
+                    <!-- Генераторы будут добавляться динамически -->
+                </div>
+            </aside>
+
+            <!-- Панель событий -->
+            <aside class="events-panel">
+                <h3 class="panel-title">
+                    <i class="fas fa-bolt"></i> События
+                </h3>
+                <div class="events-list" id="events-list">
+                    <!-- События будут добавляться динамически -->
+                </div>
+            </aside>
+        </main>
+
+        <!-- Нижняя панель -->
+        <footer class="game-footer">
+            <div class="footer-tabs">
+                <button class="tab-btn active" data-tab="generators">
+                    <i class="fas fa-industry"></i> Генераторы
+                </button>
+                <button class="tab-btn" data-tab="upgrades">
+                    <i class="fas fa-level-up-alt"></i> Улучшения
+                </button>
+                <button class="tab-btn" data-tab="rebirth">
+                    <i class="fas fa-infinity"></i> Перерождение
+                </button>
+                <button class="tab-btn" data-tab="guild">
+                    <i class="fas fa-users"></i> Гильдия
+                </button>
+            </div>
+            
+            <div class="footer-content">
+                <div class="tab-content active" id="tab-generators">
+                    <!-- Контент вкладки генераторов -->
+                </div>
+                <div class="tab-content" id="tab-upgrades">
+                    <!-- Контент вкладки улучшений -->
+                </div>
+                <div class="tab-content" id="tab-rebirth">
+                    <div class="rebirth-panel">
+                        <h4>Квантовый Скачок</h4>
+                        <div class="rebirth-info">
+                            <div class="info-item">
+                                <span>Текущие перерождения:</span>
+                                <span id="rebirth-count">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span>Требуется энергии:</span>
+                                <span id="rebirth-required">1000</span>
+                            </div>
+                            <div class="info-item">
+                                <span>Время сессии:</span>
+                                <span id="session-progress">0/4 часа</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="session-progress-bar"></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-block" id="rebirth-btn" disabled>
+                            Выполнить Перерождение
+                        </button>
+                        <div class="rebirth-rewards">
+                            <h5>Награды за перерождение:</h5>
+                            <ul>
+                                <li>+1 Квантовое очко</li>
+                                <li>+5% к производству (навсегда)</li>
+                                <li>Разблокировка новых улучшений</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Модальные окна -->
+        <div class="modal" id="social-modal">
+            <div class="modal-content">
+                <h3>Социальная панель</h3>
+                <div class="online-players" id="online-players">
+                    <!-- Список онлайн игроков -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Уведомления -->
+        <div class="notifications" id="notifications"></div>
+    </div>
+
+    <!-- Подключаем Socket.io клиент -->
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+    <script src="js/game/GameClient.js"></script>
+    <script src="js/game/CrystalManager.js"></script>
+    <script src="js/game/GeneratorManager.js"></script>
+    <script src="js/game/RebirthManager.js"></script>
+    <script src="js/ui/UIManager.js"></script>
+    <script src="js/network/SocketManager.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
