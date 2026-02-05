@@ -3,472 +3,506 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Видео Плеер</title>
+    <title>Автозапуск видео</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
+            overflow: hidden;
         }
         
         .container {
+            width: 100%;
             max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
         }
         
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         h1 {
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #00b4d8, #90e0ef);
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d, #6bcf7f, #4d96ff);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 2px 10px rgba(144, 224, 239, 0.2);
+            background-size: 300% 300%;
+            animation: gradient 8s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         
         .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.8;
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
         }
         
-        .video-container {
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(10px);
+        .video-wrapper {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            margin: 0 auto;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            transform: perspective(1000px) rotateX(5deg);
+            transition: transform 0.5s ease;
+            background: #000;
+        }
+        
+        .video-wrapper:hover {
+            transform: perspective(1000px) rotateX(0deg);
         }
         
         video {
             width: 100%;
-            border-radius: 15px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+            height: auto;
             display: block;
+            border: none;
+            outline: none;
         }
         
-        .video-placeholder {
-            width: 100%;
-            height: 500px;
-            background: linear-gradient(45deg, #0f3460, #1a1a2e);
-            border-radius: 15px;
+        .video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 30px;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            color: #90e0ef;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
+            opacity: 1;
+            transition: opacity 0.3s ease;
         }
         
-        .video-placeholder i {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            opacity: 0.7;
+        .video-wrapper:hover .video-overlay {
+            opacity: 1;
+        }
+        
+        .video-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: left;
         }
         
         .controls {
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 25px;
-            flex-wrap: wrap;
+            gap: 15px;
         }
         
-        button {
-            background: linear-gradient(45deg, #00b4d8, #0077b6);
-            color: white;
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
             border: none;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 1.1rem;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.2rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
-            gap: 10px;
-            box-shadow: 0 5px 15px rgba(0, 180, 216, 0.3);
+            justify-content: center;
         }
         
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 180, 216, 0.4);
-            background: linear-gradient(45deg, #0096c7, #005f8a);
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
         }
         
-        button:active {
-            transform: translateY(0);
-        }
-        
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .video-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-        
-        .option-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 15px;
-            border-left: 5px solid #00b4d8;
-        }
-        
-        .option-card h3 {
-            margin-bottom: 15px;
-            color: #90e0ef;
+        .loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
             display: flex;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            gap: 10px;
+            z-index: 10;
+            transition: opacity 0.5s ease;
         }
         
-        input[type="file"] {
-            width: 100%;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px dashed #00b4d8;
-            border-radius: 10px;
-            color: white;
-            margin-bottom: 15px;
-            cursor: pointer;
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 5px solid transparent;
+            border-top: 5px solid #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
         }
         
-        input[type="url"] {
-            width: 100%;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #00b4d8;
-            border-radius: 10px;
-            color: white;
-            margin-bottom: 15px;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
-        .quality-selector {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .quality-btn {
+        .timer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
             padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid transparent;
-            border-radius: 8px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            z-index: 5;
+        }
+        
+        .volume-slider {
+            width: 100px;
+            -webkit-appearance: none;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #4d96ff;
+            border-radius: 50%;
             cursor: pointer;
-            transition: all 0.3s;
         }
         
-        .quality-btn:hover {
-            background: rgba(0, 180, 216, 0.2);
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.2);
         }
         
-        .quality-btn.active {
-            border-color: #00b4d8;
-            background: rgba(0, 180, 216, 0.3);
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4d96ff);
+            width: 0%;
+            transition: width 0.1s linear;
         }
         
-        .video-info {
-            margin-top: 40px;
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-        }
-        
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .info-item {
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 15px 25px;
             border-radius: 10px;
+            font-weight: bold;
+            display: none;
+            animation: slideIn 0.5s ease;
         }
         
-        footer {
-            text-align: center;
-            margin-top: 50px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            opacity: 0.7;
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .auto-play-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 107, 107, 0.2);
+            border: 2px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
         }
         
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .controls {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            button {
-                width: 100%;
-                justify-content: center;
-            }
+            h1 { font-size: 2.5rem; }
+            .video-wrapper { width: 100%; }
+            .controls { gap: 10px; }
+            .control-btn { width: 40px; height: 40px; }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Уведомление об автозапуске -->
+    <div class="auto-play-indicator">
+        <i class="fas fa-play-circle"></i>
+        Автозапуск видео
+    </div>
+    
+    <!-- Уведомление -->
+    <div class="notification" id="notification">
+        Видео воспроизводится автоматически!
+    </div>
+    
+    <!-- Экран загрузки -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+        <p style="margin-top: 20px; font-size: 1.2rem;">Загрузка видео...</p>
+    </div>
+    
     <div class="container">
-        <header>
-            <h1><i class="fas fa-video"></i> Видео Плеер</h1>
-            <p class="subtitle">Простой и современный плеер для просмотра видео</p>
-        </header>
+        <h1><i class="fas fa-film"></i> Автоплеер</h1>
+        <p class="subtitle">Видео запускается автоматически сразу после загрузки страницы</p>
         
-        <main>
-            <div class="video-container">
-                <div class="video-placeholder" id="videoPlaceholder">
-                    <i class="fas fa-film"></i>
-                    <p>Выберите или загрузите видео для воспроизведения</p>
-                </div>
-                <video id="videoPlayer" controls style="display: none;">
-                    Ваш браузер не поддерживает видео тег.
-                </video>
+        <div class="video-wrapper">
+            <!-- Таймер -->
+            <div class="timer" id="timer">00:00</div>
+            
+            <!-- Видео элемент -->
+            <video id="mainVideo" autoplay muted playsinline>
+                <!-- ВСТАВЬТЕ СВОЁ ВИДЕО СЮДА -->
+                <source src="0205.mp4" type="video/mp4">
+                Ваш браузер не поддерживает видео тег.
+            </video>
+            
+            <!-- Прогресс-бар -->
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
             </div>
             
-            <div class="controls">
-                <button id="playBtn" disabled>
-                    <i class="fas fa-play"></i> Воспроизвести
-                </button>
-                <button id="pauseBtn" disabled>
-                    <i class="fas fa-pause"></i> Пауза
-                </button>
-                <button id="fullscreenBtn">
-                    <i class="fas fa-expand"></i> Полный экран
-                </button>
-                <button id="muteBtn">
-                    <i class="fas fa-volume-up"></i> Звук
-                </button>
-            </div>
-            
-            <div class="video-options">
-                <div class="option-card">
-                    <h3><i class="fas fa-upload"></i> Загрузить видео</h3>
-                    <p>Выберите видео файл с вашего устройства</p>
-                    <input type="file" id="fileInput" accept="video/*">
-                    <p class="subtitle">Поддерживаемые форматы: MP4, WebM, OGG</p>
-                </div>
-                
-                <div class="option-card">
-                    <h3><i class="fas fa-link"></i> Ссылка на видео</h3>
-                    <p>Вставьте прямую ссылку на видео файл</p>
-                    <input type="url" id="urlInput" placeholder="https://example.com/video.mp4">
-                    <button onclick="loadFromUrl()" style="width: 100%;">
-                        <i class="fas fa-cloud-download-alt"></i> Загрузить по ссылке
+            <!-- Оверлей с управлением -->
+            <div class="video-overlay">
+                <div class="video-title" id="videoTitle">Воспроизведение видео</div>
+                <div class="controls">
+                    <button class="control-btn" id="playPauseBtn" title="Пауза">
+                        <i class="fas fa-pause"></i>
+                    </button>
+                    <button class="control-btn" id="muteBtn" title="Включить звук">
+                        <i class="fas fa-volume-mute"></i>
+                    </button>
+                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="0">
+                    <button class="control-btn" id="fullscreenBtn" title="Полный экран">
+                        <i class="fas fa-expand"></i>
                     </button>
                 </div>
-                
-                <div class="option-card">
-                    <h3><i class="fas fa-cog"></i> Настройки качества</h3>
-                    <p>Выберите качество воспроизведения</p>
-                    <div class="quality-selector">
-                        <div class="quality-btn active" onclick="changeQuality('auto')">Авто</div>
-                        <div class="quality-btn" onclick="changeQuality('720')">720p</div>
-                        <div class="quality-btn" onclick="changeQuality('480')">480p</div>
-                        <div class="quality-btn" onclick="changeQuality('360')">360p</div>
-                    </div>
-                </div>
             </div>
-            
-            <div class="video-info">
-                <h3><i class="fas fa-info-circle"></i> Информация о видео</h3>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <strong>Статус:</strong> <span id="statusText">Видео не загружено</span>
-                    </div>
-                    <div class="info-item">
-                        <strong>Длительность:</strong> <span id="durationText">--:--</span>
-                    </div>
-                    <div class="info-item">
-                        <strong>Размер:</strong> <span id="sizeText">-- MB</span>
-                    </div>
-                    <div class="info-item">
-                        <strong>Формат:</strong> <span id="formatText">--</span>
-                    </div>
-                </div>
-            </div>
-        </main>
+        </div>
         
-        <footer>
-            <p>© 2023 Видео Плеер | Создано с <i class="fas fa-heart" style="color: #ff4757;"></i></p>
-        </footer>
+        <div style="margin-top: 40px; opacity: 0.8;">
+            <p><i class="fas fa-info-circle"></i> Видео начинает воспроизводиться сразу после загрузки</p>
+        </div>
     </div>
 
     <script>
         // Получаем элементы DOM
-        const videoPlayer = document.getElementById('videoPlayer');
-        const videoPlaceholder = document.getElementById('videoPlaceholder');
-        const fileInput = document.getElementById('fileInput');
-        const urlInput = document.getElementById('urlInput');
-        const playBtn = document.getElementById('playBtn');
-        const pauseBtn = document.getElementById('pauseBtn');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const video = document.getElementById('mainVideo');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const notification = document.getElementById('notification');
+        const playPauseBtn = document.getElementById('playPauseBtn');
         const muteBtn = document.getElementById('muteBtn');
-        const statusText = document.getElementById('statusText');
-        const durationText = document.getElementById('durationText');
-        const sizeText = document.getElementById('sizeText');
-        const formatText = document.getElementById('formatText');
-        const qualityBtns = document.querySelectorAll('.quality-btn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const timer = document.getElementById('timer');
+        const progress = document.getElementById('progress');
+        const videoTitle = document.getElementById('videoTitle');
 
-        // Текущий источник видео
-        let currentVideoSource = null;
+        // Функция для форматирования времени (секунды -> MM:SS)
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
 
-        // Загрузка видео из файла
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                loadVideoFile(file);
+        // Функция показа уведомления
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Автозапуск при загрузке страницы
+        window.addEventListener('load', function() {
+            console.log("Страница загружена, запускаю видео...");
+            
+            // Показываем уведомление
+            showNotification("Видео запускается автоматически!");
+            
+            // Пытаемся запустить видео автоматически
+            const playPromise = video.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    console.log("Видео успешно запущено");
+                    // Скрываем экран загрузки
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                    }, 500);
+                }).catch(error => {
+                    console.log("Автовоспроизведение заблокировано:", error);
+                    loadingScreen.innerHTML = `
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ff6b6b; margin-bottom: 20px;"></i>
+                        <p style="font-size: 1.2rem; text-align: center;">
+                            Автовоспроизведение заблокировано браузером<br>
+                            <button onclick="video.play()" style="
+                                background: #ff6b6b;
+                                color: white;
+                                border: none;
+                                padding: 15px 30px;
+                                border-radius: 25px;
+                                font-size: 1.1rem;
+                                margin-top: 20px;
+                                cursor: pointer;
+                            ">
+                                <i class="fas fa-play"></i> Нажмите чтобы запустить видео
+                            </button>
+                        </p>
+                    `;
+                });
             }
         });
 
-        function loadVideoFile(file) {
-            const url = URL.createObjectURL(file);
-            loadVideo(url, file.name, file.size);
+        // Обновление таймера и прогресс-бара
+        video.addEventListener('timeupdate', function() {
+            // Обновляем таймер
+            timer.textContent = formatTime(video.currentTime) + ' / ' + formatTime(video.duration);
             
-            // Показываем информацию о файле
-            statusText.textContent = "Видео загружено";
-            formatText.textContent = file.type.split('/')[1].toUpperCase();
-            sizeText.textContent = (file.size / (1024 * 1024)).toFixed(2) + " MB";
-        }
-
-        // Загрузка видео по URL
-        function loadFromUrl() {
-            const url = urlInput.value.trim();
-            if (url) {
-                loadVideo(url, "Видео по ссылке", 0);
-                statusText.textContent = "Загрузка по ссылке...";
-                formatText.textContent = "Из сети";
-                sizeText.textContent = "Неизвестно";
-            } else {
-                alert("Пожалуйста, введите ссылку на видео");
-            }
-        }
-
-        // Основная функция загрузки видео
-        function loadVideo(src, title, size) {
-            currentVideoSource = src;
-            videoPlayer.src = src;
-            videoPlayer.style.display = 'block';
-            videoPlaceholder.style.display = 'none';
-            
-            // Включаем кнопки управления
-            playBtn.disabled = false;
-            pauseBtn.disabled = false;
-            
-            statusText.textContent = "Готово к воспроизведению";
-            
-            // Обработчик для получения длительности видео
-            videoPlayer.addEventListener('loadedmetadata', function() {
-                const duration = videoPlayer.duration;
-                const minutes = Math.floor(duration / 60);
-                const seconds = Math.floor(duration % 60);
-                durationText.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            });
-            
-            // Автовоспроизведение после загрузки
-            videoPlayer.addEventListener('canplay', function() {
-                videoPlayer.play();
-                playBtn.innerHTML = '<i class="fas fa-play"></i> Воспроизвести';
-            });
-        }
+            // Обновляем прогресс-бар
+            const progressPercent = (video.currentTime / video.duration) * 100;
+            progress.style.width = progressPercent + '%';
+        });
 
         // Управление воспроизведением
-        playBtn.addEventListener('click', function() {
-            if (videoPlayer.paused) {
-                videoPlayer.play();
-                playBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза';
+        playPauseBtn.addEventListener('click', function() {
+            if (video.paused) {
+                video.play();
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                playPauseBtn.title = "Пауза";
             } else {
-                videoPlayer.pause();
-                playBtn.innerHTML = '<i class="fas fa-play"></i> Воспроизвести';
-            }
-        });
-
-        pauseBtn.addEventListener('click', function() {
-            videoPlayer.pause();
-            playBtn.innerHTML = '<i class="fas fa-play"></i> Воспроизвести';
-        });
-
-        // Полноэкранный режим
-        fullscreenBtn.addEventListener('click', function() {
-            if (videoPlayer.requestFullscreen) {
-                videoPlayer.requestFullscreen();
-            } else if (videoPlayer.mozRequestFullScreen) { /* Firefox */
-                videoPlayer.mozRequestFullScreen();
-            } else if (videoPlayer.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-                videoPlayer.webkitRequestFullscreen();
-            } else if (videoPlayer.msRequestFullscreen) { /* IE/Edge */
-                videoPlayer.msRequestFullscreen();
+                video.pause();
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                playPauseBtn.title = "Воспроизвести";
             }
         });
 
         // Управление звуком
         muteBtn.addEventListener('click', function() {
-            if (videoPlayer.muted) {
-                videoPlayer.muted = false;
-                muteBtn.innerHTML = '<i class="fas fa-volume-up"></i> Звук';
+            video.muted = !video.muted;
+            if (video.muted) {
+                muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                muteBtn.title = "Включить звук";
+                volumeSlider.value = 0;
             } else {
-                videoPlayer.muted = true;
-                muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i> Вкл. звук';
+                muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                muteBtn.title = "Выключить звук";
+                volumeSlider.value = video.volume;
             }
         });
 
-        // Изменение качества (имитация - в реальном проекте нужны разные источники)
-        function changeQuality(quality) {
-            qualityBtns.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+        // Регулятор громкости
+        volumeSlider.addEventListener('input', function() {
+            video.volume = volumeSlider.value;
+            video.muted = (video.volume === 0);
+            muteBtn.innerHTML = video.muted ? 
+                '<i class="fas fa-volume-mute"></i>' : 
+                '<i class="fas fa-volume-up"></i>';
+            muteBtn.title = video.muted ? "Включить звук" : "Выключить звук";
+        });
+
+        // Полноэкранный режим
+        fullscreenBtn.addEventListener('click', function() {
+            const videoWrapper = document.querySelector('.video-wrapper');
             
-            // В реальном приложении здесь будет переключение источников видео
-            statusText.textContent = `Качество изменено на ${quality === 'auto' ? 'авто' : quality + 'p'}`;
+            if (!document.fullscreenElement) {
+                if (videoWrapper.requestFullscreen) {
+                    videoWrapper.requestFullscreen();
+                } else if (videoWrapper.mozRequestFullScreen) {
+                    videoWrapper.mozRequestFullScreen();
+                } else if (videoWrapper.webkitRequestFullscreen) {
+                    videoWrapper.webkitRequestFullscreen();
+                } else if (videoWrapper.msRequestFullscreen) {
+                    videoWrapper.msRequestFullscreen();
+                }
+                fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                fullscreenBtn.title = "Выйти из полного экрана";
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                fullscreenBtn.title = "Полный экран";
+            }
+        });
+
+        // Событие при окончании видео
+        video.addEventListener('ended', function() {
+            playPauseBtn.innerHTML = '<i class="fas fa-redo"></i>';
+            playPauseBtn.title = "Перезапустить";
+            showNotification("Видео завершено! Нажмите для повторного воспроизведения");
+        });
+
+        // Изменение заголовка видео
+        video.addEventListener('loadeddata', function() {
+            videoTitle.textContent = "Демонстрационное видео | " + formatTime(video.duration);
+        });
+
+        // Для мобильных устройств: обработка касания
+        document.querySelector('.video-wrapper').addEventListener('click', function(e) {
+            if (e.target === this || e.target === video) {
+                if (video.paused) {
+                    video.play();
+                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                } else {
+                    video.pause();
+                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            }
+        });
+
+        // Автоматически запускаем видео, когда оно готово
+        video.addEventListener('canplay', function() {
+            console.log("Видео готово к воспроизведению");
+        });
+
+        // Если видео уже загружено (из кеша), запускаем сразу
+        if (video.readyState >= 3) {
+            video.play().catch(e => console.log("Ошибка автозапуска:", e));
         }
-
-        // Обновление состояния кнопки воспроизведения
-        videoPlayer.addEventListener('play', function() {
-            playBtn.innerHTML = '<i class="fas fa-pause"></i> Пауза';
-        });
-
-        videoPlayer.addEventListener('pause', function() {
-            playBtn.innerHTML = '<i class="fas fa-play"></i> Воспроизвести';
-        });
-
-        // Пример предзагруженного видео (можно удалить)
-        // Для демонстрации - используем тестовое видео
-        window.addEventListener('DOMContentLoaded', function() {
-            // Можно добавить пример видео по умолчанию
-            // loadVideo('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', 'Пример видео', 0);
-        });
     </script>
 </body>
 </html>
